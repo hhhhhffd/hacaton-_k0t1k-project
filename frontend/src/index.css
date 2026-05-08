@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* Кастомные стили для скроллбара — светлая тема */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Базовые стили — админская светлая тема */
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+}
+
+#root > * {
+  flex: 1;
+}
+
+/* Стандартизация размеров шрифтов */
+.text-base { font-size: 16px !important; }
+.text-sm { font-size: 14px !important; }
+.text-xs { font-size: 12px !important; }
+
+/* Кастомный чекбокс — #C0F11C с черной галкой */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #fff;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #C0F11C;
+  border-color: #C0F11C;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%23000000' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+input[type="checkbox"]:hover {
+  border-color: #C0F11C;
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(192, 241, 28, 0.3);
+}

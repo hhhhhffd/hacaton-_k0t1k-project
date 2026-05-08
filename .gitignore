@@ -1,0 +1,72 @@
+# ═══════════════════════════════════════
+# Секреты и конфиденциальное
+# ═══════════════════════════════════════
+.env
+.env.*
+!.env.example
+.claude
+CLAUDE.md
+.github
+frontend/src/pages/Preza3Page.tsx
+
+# ═══════════════════════════════════════
+# Python
+# ═══════════════════════════════════════
+__pycache__/
+*.pyc
+*.pyo
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+*.joblib
+*.pkl
+*.log
+*.ipynb_checkpoints/
+
+# ═══════════════════════════════════════
+# Данные и Базы
+# ═══════════════════════════════════════
+backend/data/raw/*.xlsx
+backend/data/raw/*.xls
+backend/models/active_model.txt
+*.sqlite
+*.db
+*.csv
+*.tsv
+
+# ═══════════════════════════════════════
+# Node.js / Frontend
+# ═══════════════════════════════════════
+node_modules/
+dist/
+dist-ssr/
+build/
+.npm
+.eslintcache
+*.local
+
+# ═══════════════════════════════════════
+# OS
+# ═══════════════════════════════════════
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# ═══════════════════════════════════════
+# IDE
+# ═══════════════════════════════════════
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace

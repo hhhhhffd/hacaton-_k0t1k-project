@@ -1,0 +1,5 @@
+originRequest:
+  connectTimeout: 30s
+  keepAliveTimeout: 90s
+  # Увеличиваем таймаут для долгих ML-запросов (загрузка + обучение модели)
+  readTimeout: 600s
