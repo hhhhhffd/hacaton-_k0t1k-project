@@ -1085,9 +1085,7 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 
 ## 📞 Contacts
 
-- **GitHub**: https://github.com/your-username/k0t1k
-- **Email**: your-email@example.com
-- **Telegram**: @your-telegram
+- **https://datanomads.cc**
 
 ---
 
