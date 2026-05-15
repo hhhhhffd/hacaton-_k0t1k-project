@@ -1032,8 +1032,7 @@ curl http://localhost/api/health
 |-------|--------|------------|
 | Cyrillic in PDF | ✅ Fixed | Uses DejaVuSans font |
 | Slow LLM explanations | ⚠️ Monitored | 1-hour cache, SSE |
-| Large Excel files (>50MB) | ⚠️ Limited | Split into parts |
-| Google OAuth without HTTPS | ❌ Doesn't work | Requires HTTPS |
+| Large Excel files (>50MB) | ⚠️ Limited | Split into parts	|
 
 ---
 
@@ -1051,27 +1050,6 @@ Per Decentrathon 5.0 requirements:
 | **Demo & UX** | 10 | Usage clarity | ✅ Intuitive UI, dashboards, charts |
 | **Documentation** | 10 | README, launch, data, limitations | ✅ **This documentation** 🚀 |
 | **TOTAL** | **100** | | |
-
----
-
-## 👥 Team
-
-**Team Name**: DataNomads
-
-**Project**: _k0t1k Project
-
-| Role | Name |
-|------|------|
-| Team Lead / Fullstack | Your Name |
-| ML Engineer | Your Name |
-| Data Scientist | Your Name |
-| UI/UX Designer | Your Name |
-
----
-
-## 📄 License
-
-This project is licensed under the **GNU General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
