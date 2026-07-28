@@ -49,10 +49,10 @@ export default function WeightSimulator() {
   const hasChanges = Object.values(weights).some((v) => v !== 50);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+    <div className="bento-panel overflow-hidden">
       {/* Заголовок */}
       <div className="px-6 pt-6 pb-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#C0F11C] rounded-xl">
               <SlidersHorizontal className="w-5 h-5 text-[#333333]" />
@@ -75,7 +75,7 @@ export default function WeightSimulator() {
 
       <div className="p-6">
         {/* Слайдеры — 3 колонки на всю ширину */}
-        <div className="grid grid-cols-3 gap-x-8 gap-y-5 mb-6">
+        <div className="mb-6 grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2 xl:grid-cols-3">
           {WEIGHT_SLIDERS.map((slider) => {
             const value = weights[slider.key];
             const isDefault = value === 50;

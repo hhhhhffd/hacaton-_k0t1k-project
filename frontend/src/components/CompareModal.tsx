@@ -92,7 +92,7 @@ export default function CompareModal({ apps, onClose }: CompareModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white border border-gray-200 rounded-2xl max-w-[95vw] max-h-[90vh] flex flex-col shadow-2xl shadow-black/10"
+        className="bento-panel flex max-h-[90vh] max-w-[95vw] flex-col"
         style={{ width: Math.min(160 + n * colWidth + 32, window.innerWidth * 0.95) }}
         onClick={e => e.stopPropagation()}
       >

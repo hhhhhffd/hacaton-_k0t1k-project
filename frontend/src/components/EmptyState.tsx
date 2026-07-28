@@ -1,4 +1,4 @@
-import { Upload, ServerCrash, FileSpreadsheet, ArrowUpRight } from 'lucide-react';
+import { Upload, ServerCrash, FileSpreadsheet } from 'lucide-react';
 import { useTranslation } from '../i18n/useTranslation';
 import { useAppStore } from '../store/appStore';
 
@@ -18,41 +18,36 @@ export default function EmptyState({ kind }: EmptyStateProps) {
 
   if (kind === 'unavailable') {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-8">
-        <div className="w-20 h-20 bg-[#DC2626] rounded-2xl flex items-center justify-center mb-6">
-          <ServerCrash className="w-10 h-10 text-[#333333]" />
+      <div className="bento-panel flex min-h-[360px] flex-col justify-between border-red-200 p-7">
+        <div className="grid h-10 w-10 place-items-center rounded-xl bg-red-50 text-red-700">
+          <ServerCrash className="h-5 w-5" />
         </div>
-        <h3 className="text-xl font-extrabold text-[#333333] tracking-tight mb-2">{t('unavailable.title')}</h3>
-        <p className="text-sm text-gray-500 text-center max-w-md mb-6">
-          {t('unavailable.subtitle')}
-        </p>
-        <button
-          onClick={handleRetry}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl text-sm font-semibold text-[#333333] transition-colors"
-        >
-          {t('unavailable.retry')}
-        </button>
+        <div>
+          <h3 className="text-2xl font-extrabold tracking-[-.025em]">{t('unavailable.title')}</h3>
+          <p className="mt-3 max-w-md text-sm text-gray-600">{t('unavailable.subtitle')}</p>
+          <button onClick={handleRetry} className="work-button-secondary mt-6">{t('unavailable.retry')}</button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-8">
-      <div className="w-20 h-20 bg-[#C0F11C] rounded-2xl flex items-center justify-center mb-6">
-        <FileSpreadsheet className="w-10 h-10 text-[#333333]" />
+    <div className="bento-panel flex min-h-[360px] flex-col justify-between border-t-4 border-t-[#C0F11C] p-7">
+      <div className="brand-mark">
+        <FileSpreadsheet className="h-5 w-5" />
       </div>
-      <h3 className="text-xl font-extrabold text-[#333333] tracking-tight mb-2">{t('empty.title')}</h3>
-      <p className="text-sm text-gray-500 text-center max-w-md mb-4">
-        {t('empty.subtitle')}
-      </p>
-
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#C0F11C] rounded-xl mb-3">
-        <Upload className="w-4 h-4 text-[#333333]" />
-        <span className="text-sm text-[#333333] font-semibold">{t('empty.hint')}</span>
-        <ArrowUpRight className="w-4 h-4 text-[#333333]/60" />
+      <div>
+        <h3 className="max-w-xl text-2xl font-extrabold tracking-[-0.025em]">{t('empty.title')}</h3>
+        <p className="mt-3 max-w-md text-sm text-gray-600">{t('empty.subtitle')}</p>
+        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-gray-200 pt-5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-[#333333]">
+            <Upload className="h-4 w-4" />
+            <span>{t('empty.hint')}</span>
+          </div>
+          <span className="rounded-md border border-gray-300 bg-gray-50 px-2 py-1 font-mono text-[11px] text-gray-500">XLSX / XLS</span>
+        </div>
+        <p className="mt-2 text-xs text-gray-500">{t('empty.format')}</p>
       </div>
-
-      <p className="text-xs text-gray-400">{t('empty.format')}</p>
     </div>
   );
 }

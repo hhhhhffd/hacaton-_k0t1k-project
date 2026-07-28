@@ -8,7 +8,7 @@ export default function ProactiveOffersPage() {
   return (
     <>
       <Header title={t('offers.title')} />
-      <div className="flex-1 p-5 overflow-y-auto">
+      <div className="page-frame flex-1">
         <ProactiveOffers />
       </div>
     </>

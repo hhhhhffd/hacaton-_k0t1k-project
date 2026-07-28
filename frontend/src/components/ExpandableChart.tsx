@@ -36,7 +36,7 @@ export default function ExpandableChart({ children, title, minHeight = 'min-h-[3
           onClick={() => setIsExpanded(false)}
         >
           <div
-            className="relative w-full max-w-[90vw] max-h-[90vh] bg-white border border-gray-200 rounded-3xl p-6 overflow-auto shadow-2xl"
+            className="bento-panel relative max-h-[90vh] w-full max-w-[90vw] overflow-auto p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">

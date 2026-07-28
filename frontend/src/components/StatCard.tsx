@@ -19,7 +19,7 @@ const iconColorMap = {
 
 export default function StatCard({ title, value, subtitle, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5">
+    <div className="bento-panel p-5">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <p className="text-sm text-gray-500 mb-1">{title}</p>

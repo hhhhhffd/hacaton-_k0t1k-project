@@ -210,7 +210,7 @@ export default function BudgetSimulator() {
     : '—';
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+    <div className="bento-panel overflow-hidden">
       {/* Заголовок */}
       <div className="px-5 py-3 border-b border-gray-200 flex items-center gap-2">
         <div className="w-7 h-7 bg-[#C0F11C] rounded-xl flex items-center justify-center">
@@ -224,9 +224,9 @@ export default function BudgetSimulator() {
       </div>
 
       {/* Контент — горизонтальный */}
-      <div className="px-5 py-4 flex gap-5 items-start">
+      <div className="flex flex-col items-start gap-4 px-4 py-4 lg:flex-row lg:gap-5 lg:px-5">
         {/* ЛЕВАЯ ЧАСТЬ: ввод + пресеты */}
-        <div className="flex-shrink-0 w-64 space-y-2.5">
+        <div className="w-full flex-shrink-0 space-y-2.5 lg:w-64">
           {/* Поле ввода */}
           <div className="relative">
             <input
@@ -269,7 +269,7 @@ export default function BudgetSimulator() {
         <div className="flex-1 min-w-0">
           {/* Ошибка */}
           {error && (
-            <div className="text-[#333333] text-sm text-center py-3 bg-[#DC2626] rounded-xl">
+            <div className="rounded-xl bg-[#DC2626] py-3 text-center text-sm text-white">
               {error}
             </div>
           )}
@@ -284,7 +284,7 @@ export default function BudgetSimulator() {
           {/* Результаты в горизонтальном grid */}
           {result && !error && (
             <div className="space-y-3">
-            <div className="grid grid-cols-4 gap-3 items-stretch">
+            <div className="grid grid-cols-2 items-stretch gap-2 sm:grid-cols-4 sm:gap-3">
               {/* 1. Профинансировано */}
               <div className="bg-[#C0F11C]/10 border border-[#C0F11C]/30 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-1.5 mb-1">

@@ -173,13 +173,14 @@ export default function ExplainabilityModal({ applicationId, onClose }: Explaina
     : [];
 
   const score = meritScore;
-  const scoreColor = 'text-[#333333]';
+  const scoreColor =
+    score >= 70 ? 'text-[#333333]' : score >= 40 ? 'text-amber-700' : 'text-red-700';
   const scoreBg =
     score >= 70
-      ? 'bg-[#C0F11C]'
+      ? 'border-[#a8d400] bg-[#C0F11C]/20'
       : score >= 40
-        ? 'bg-[#D97706]'
-        : 'bg-[#DC2626]';
+        ? 'border-amber-200 bg-amber-50'
+        : 'border-red-200 bg-red-50';
 
   const isLoading = !shapReady && !error;
 
@@ -189,7 +190,7 @@ export default function ExplainabilityModal({ applicationId, onClose }: Explaina
       onClick={onClose}
     >
       <div
-        className="bg-white border border-gray-200 rounded-3xl w-[75vw] max-w-[1400px] min-w-[700px] max-lg:w-[95vw] max-lg:min-w-0 max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/10"
+        className="bento-panel max-h-[90vh] w-[75vw] min-w-[700px] max-w-[1400px] overflow-y-auto max-lg:w-[95vw] max-lg:min-w-0"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Заголовок */}
@@ -225,7 +226,7 @@ export default function ExplainabilityModal({ applicationId, onClose }: Explaina
           )}
 
           {error && !isLoading && (
-            <div className="flex items-center gap-3 px-4 py-3 bg-[#DC2626] rounded-2xl text-[#333333]">
+            <div className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
               <AlertTriangle className="w-5 h-5 shrink-0" />
               <span className="text-sm">{error}</span>
             </div>
@@ -235,7 +236,7 @@ export default function ExplainabilityModal({ applicationId, onClose }: Explaina
             <>
               {/* LLM объяснение + балл */}
               <div className={`border rounded-2xl p-6 ${scoreBg}`}>
-                <div className="flex gap-6">
+                <div className="flex flex-col gap-5 sm:flex-row sm:gap-6">
                   {/* Балл */}
                   <div className={`text-center shrink-0 border-r pr-6 ${score >= 70 ? 'border-[#C0F11C]/40' : score >= 40 ? 'border-yellow-200' : 'border-red-200'}`}>
                     <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">{t('explain.score')}</p>
@@ -246,20 +247,20 @@ export default function ExplainabilityModal({ applicationId, onClose }: Explaina
 
                   {/* LLM текст */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-extrabold text-[#333333] mb-2 flex items-center gap-2 uppercase tracking-widest">
+                    <h4 className="mb-2 flex items-center gap-2 text-sm font-bold text-[#333333]">
                       <Brain className="w-4 h-4" />
                       {t('explain.llm')}
                       {llmStreaming && <Loader2 className="w-3 h-3 animate-spin" />}
                     </h4>
-                    <p className="text-base text-[#333333] leading-relaxed font-medium italic">
+                    <p className="text-sm font-normal leading-relaxed text-[#333333] sm:text-base">
                       {(llmText || t('explain.loading')).split(/(№\d+|Приказ[а-яА-Я\s]*№\d+|бұйрығы|бұйрық)/g).map((part, i) => {
                         if (/№\d+|Приказ|бұйрық/i.test(part)) {
-                          return <span key={i} className="text-blue-600 font-semibold not-italic">{part}</span>;
+                          return <span key={i} className="font-semibold text-blue-600">{part}</span>;
                         }
                         return part;
                       })}
                       {llmStreaming && (
-                        <span className="inline-block w-1.5 h-5 bg-[#080000] ml-1 animate-pulse align-middle" />
+                        <span className="ml-1 inline-block h-5 w-1.5 animate-pulse bg-[#333333] align-middle" />
                       )}
                     </p>
                   </div>
@@ -340,15 +341,15 @@ export default function ExplainabilityModal({ applicationId, onClose }: Explaina
 
               {/* Кнопка отказа */}
               {appData && (riskLevel === 'red' || riskLevel === 'yellow' || score < 50) && (
-                <div className="bg-[#DC2626] rounded-2xl p-4">
-                  <div className="flex items-center justify-between">
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#DC2626] rounded-xl flex items-center justify-center">
-                        <FileX className="w-5 h-5 text-[#333333]" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100">
+                        <FileX className="h-5 w-5 text-red-700" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-[#333333]">{t('explain.refusalTitle')}</p>
-                        <p className="text-xs text-gray-500">{t('explain.refusalDesc')}</p>
+                        <p className="text-sm font-bold text-red-800">{t('explain.refusalTitle')}</p>
+                        <p className="text-xs text-red-700/75">{t('explain.refusalDesc')}</p>
                       </div>
                     </div>
                     <button

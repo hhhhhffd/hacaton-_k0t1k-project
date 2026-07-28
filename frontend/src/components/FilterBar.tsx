@@ -17,12 +17,12 @@ function FilterSelect({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-extrabold text-gray-400 uppercase tracking-wider">{label}</label>
+      <label className="section-kicker">{label}</label>
       <div className="relative">
         <select
           value={value || ''}
           onChange={(e) => onChange(e.target.value || null)}
-          className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-3 py-2 pr-8 text-sm text-gray-900 font-medium hover:border-gray-300 focus:ring-2 focus:ring-[#C0F11C] focus:border-transparent focus:outline-none transition-all cursor-pointer"
+          className="work-control appearance-none pr-8 text-sm font-medium cursor-pointer"
         >
           <option value="">{placeholder}</option>
           {options.map((opt) => (
@@ -48,7 +48,7 @@ function ScoreInput({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-extrabold text-gray-400 uppercase tracking-wider">{label}</label>
+      <label className="section-kicker">{label}</label>
       <input
         type="number"
         min={0}
@@ -60,7 +60,7 @@ function ScoreInput({
           const v = e.target.value;
           onChange(v === '' ? null : Number(v));
         }}
-        className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 font-medium placeholder-gray-300 hover:border-gray-300 focus:ring-2 focus:ring-[#C0F11C] focus:border-transparent focus:outline-none transition-all tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="work-control text-sm font-medium tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
     </div>
   );
@@ -79,7 +79,7 @@ export default function FilterBar() {
   ].filter((v) => v !== null && v !== undefined).length;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4">
+    <div className="bento-panel px-4 py-4 sm:px-5">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-gray-400" />
@@ -101,7 +101,7 @@ export default function FilterBar() {
         )}
       </div>
 
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <FilterSelect
           label={t('filter.region')}
           value={filters.region}

@@ -47,8 +47,8 @@ function ScoreBadge({ score }: { score: number | null }) {
     score >= 70
       ? 'bg-[#C0F11C] text-[#333333] font-bold'
       : score >= 40
-        ? 'bg-[#D97706] text-[#333333] font-bold'
-        : 'bg-[#DC2626] text-[#333333] font-bold';
+        ? 'border border-amber-200 bg-amber-50 text-amber-700 font-bold'
+        : 'border border-red-200 bg-red-50 text-red-700 font-bold';
 
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm tabular-nums ${cls}`}>
@@ -66,7 +66,7 @@ function TrafficLightBadge({ level, reason }: { level: string | null; reason?: s
     <>
       {l === 'red' && (
         <span
-          className="inline-flex items-center gap-1 px-3 py-1 bg-[#DC2626] text-[#333333] font-bold rounded-full text-sm cursor-help"
+          className="inline-flex cursor-help items-center gap-1 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-sm font-bold text-red-700"
           title={reason || t('risk.red')}
         >
           <AlertOctagon className="w-3 h-3" />
@@ -75,10 +75,10 @@ function TrafficLightBadge({ level, reason }: { level: string | null; reason?: s
       )}
       {l === 'yellow' && (
         <span
-          className="inline-flex items-center gap-1 px-3 py-1 bg-[#D97706] text-[#333333] font-bold rounded-full text-sm cursor-help"
+          className="inline-flex cursor-help items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-bold text-amber-700"
           title={reason || t('risk.yellow')}
         >
-          <span className="w-2 h-2 rounded-full bg-[#333333]" />
+          <span className="h-2 w-2 rounded-full bg-amber-500" />
           {t('risk.yellow')}
         </span>
       )}
@@ -474,8 +474,8 @@ export default function ApplicationTable({ onExplain }: ApplicationTableProps) {
       </div>
 
       {/* Пагинация */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-white">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 bg-white px-4 py-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm text-gray-500 tabular-nums">
             {pagination.skip + 1}–{Math.min(pagination.skip + pagination.limit, totalCount)}{' '}
             {t('pagination.of')} {totalCount.toLocaleString('ru-RU')}

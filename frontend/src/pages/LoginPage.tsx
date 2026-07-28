@@ -174,23 +174,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex items-center justify-center">
-      {/* Карточка входа — строго по центру */}
-      <div className="relative z-10 w-full max-w-md px-4">
-        {/* Логотип */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#C0F11C] rounded-2xl mb-4">
-            <Wheat className="w-8 h-8 text-[#333333]" />
+    <div className="public-shell grid min-h-screen place-items-center p-3 sm:p-6">
+      <main className="bento-panel w-full max-w-lg p-6 sm:p-10">
+        <div className="mx-auto w-full max-w-sm">
+          <div className="mb-8 flex items-center gap-3 border-b border-gray-200 pb-5">
+            <span className="brand-mark shrink-0"><Wheat className="h-4 w-4" /></span>
+            <div>
+              <p className="text-lg font-extrabold leading-tight text-[#333333]">_k0t1k</p>
+              <p className="mt-0.5 text-xs leading-tight text-gray-500">{t('auth.subtitle')}</p>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">_k0t1k Project</h1>
-          <p className="text-gray-500 mt-2">{t('auth.subtitle')}</p>
-        </div>
 
-        {/* Форма */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6 text-center">
+          <h1 className="mb-6 text-2xl font-extrabold tracking-[-.025em] text-[#333333]">
             {mode === 'login' ? t('auth.loginTitle') : t('auth.registerTitle')}
-          </h2>
+          </h1>
 
           {/* Google Sign-In кнопка */}
           {GOOGLE_CLIENT_ID ? (
@@ -210,9 +207,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => alert(t('auth.googleUnavailable'))}
-                className="w-full flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl py-3 px-4 text-gray-500 transition-colors"
+                className="work-button-secondary w-full"
               >
-                <GoogleIcon className="w-5 h-5 grayscale opacity-60" />
+                <GoogleIcon className="w-5 h-5" />
                 <span>{mode === 'login' ? t('auth.googleLogin') : t('auth.googleRegister')}</span>
               </button>
               <div className="relative my-5">
@@ -237,7 +234,7 @@ export default function LoginPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder={t('auth.fullNamePlaceholder')}
-                    className="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] transition-colors"
+                    className="work-control pl-10"
                   />
                 </div>
               </div>
@@ -252,7 +249,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="user@example.com"
-                  className="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] transition-colors"
+                  className="work-control pl-10"
                 />
               </div>
             </div>
@@ -266,13 +263,13 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={t('auth.passwordPlaceholder')}
-                  className="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] transition-colors"
+                  className="work-control pl-10"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-[#333333] bg-[#DC2626] rounded-lg px-4 py-3 text-sm">
+              <div role="alert" className="flex items-center gap-2 rounded-lg bg-[#DC2626] px-4 py-3 text-sm text-white">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 {error}
               </div>
@@ -281,7 +278,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center gap-2 bg-[#C0F11C] hover:brightness-95 disabled:opacity-50 text-[#333333] font-medium py-2.5 rounded-lg transition-colors"
+              className="work-button w-full disabled:opacity-50"
             >
               {submitting ? (
                 <div className="w-5 h-5 border-2 border-[#080000]/30 border-t-[#080000] rounded-full animate-spin" />
@@ -314,19 +311,14 @@ export default function LoginPage() {
           <div className="mt-4 pt-4 border-t border-gray-200 flex justify-center">
             <button
               onClick={() => setLanguage(language === 'ru' ? 'kz' : 'ru')}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              className="work-button-secondary"
             >
               <Globe className="w-4 h-4" />
               {language === 'ru' ? 'Қазақша' : 'Русский'}
             </button>
           </div>
         </div>
-
-        {/* Подвал */}
-        <p className="text-center text-sm text-gray-400 mt-6">
-          Decentrathon 5.0 &middot; DataNomads Team
-        </p>
-      </div>
+      </main>
     </div>
   );
 }

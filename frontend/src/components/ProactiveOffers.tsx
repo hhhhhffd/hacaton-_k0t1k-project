@@ -57,11 +57,11 @@ export default function ProactiveOffers() {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+    <div className="bento-panel overflow-hidden">
       {/* Заголовок */}
-      <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#C0F11C] rounded-xl">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 px-5 py-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="brand-mark">
             <UserPlus className="w-5 h-5 text-[#333333]" />
           </div>
           <div>
@@ -121,13 +121,13 @@ export default function ProactiveOffers() {
             {offers.map((offer, index) => (
               <div
                 key={`${offer.farmer_name}-${index}`}
-                className={`p-4 rounded-2xl border transition-all ${
+                className={`border-b border-gray-200 p-4 transition-colors last:border-b-0 ${
                   sentOffers.has(offer.farmer_name)
                     ? 'bg-[#C0F11C]/20 border-[#C0F11C]/40'
                     : 'bg-white border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
                   {/* Информация о фермере */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">

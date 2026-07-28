@@ -91,12 +91,12 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="flex-1 p-6 overflow-auto bg-[#F4F4F4]">
-      <div className="mx-auto">
+    <div className="page-frame flex-1">
+      <div>
         {/* Шапка */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="bento-panel mb-2.5 flex flex-wrap items-center justify-between gap-4 p-4 sm:p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#C0F11C] rounded-xl flex items-center justify-center">
+            <div className="brand-mark">
               <Users className="w-5 h-5 text-[#333333]" />
             </div>
             <div>
@@ -105,7 +105,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <input
@@ -113,14 +113,14 @@ export default function AdminPage() {
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder={t('admin.searchPlaceholder')}
-                className="pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-[#333333] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C0F11C] focus:border-transparent w-64"
+                className="work-control w-64 pl-9"
               />
             </div>
 
             <button
               onClick={forceRefresh}
               disabled={loading}
-              className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-[#333333] font-semibold px-4 py-2 rounded-xl transition-colors border border-gray-200 disabled:opacity-50"
+              className="work-button-secondary disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               {t('admin.refresh')}
@@ -130,13 +130,13 @@ export default function AdminPage() {
 
         {/* Ошибка */}
         {error && (
-          <div className="mb-4 bg-[#DC2626] rounded-2xl px-4 py-3 text-[#333333] text-sm">
+          <div role="alert" className="mb-2.5 rounded-xl bg-[#DC2626] px-4 py-3 text-sm text-white">
             {error}
           </div>
         )}
 
         {/* Таблица */}
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+        <div className="bento-panel overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
@@ -223,7 +223,7 @@ export default function AdminPage() {
                             {t('admin.statusActive')}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-[#333333] bg-[#DC2626] px-2.5 py-1 rounded-full">
+                          <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700">
                             <ShieldX className="w-3 h-3" />
                             {t('admin.statusPending')}
                           </span>
@@ -233,7 +233,7 @@ export default function AdminPage() {
                       {/* Роль */}
                       <td className="px-6 py-4 text-center">
                         {u.is_admin ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-[#333333] bg-[#D97706] px-2.5 py-1 rounded-full">
+                          <span className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-700">
                             <Crown className="w-3 h-3" />
                             {t('admin.roleAdmin')}
                           </span>
@@ -251,7 +251,7 @@ export default function AdminPage() {
                             title={u.is_active ? t('admin.actionBlock') : t('admin.actionApprove')}
                             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                               u.is_active
-                                ? 'bg-[#DC2626] text-[#333333] hover:brightness-95'
+                                ? 'bg-[#DC2626] text-white hover:brightness-95'
                                 : 'bg-[#C0F11C] text-[#333333] hover:brightness-95'
                             }`}
                           >
@@ -270,7 +270,7 @@ export default function AdminPage() {
                             title={u.is_admin ? t('admin.actionRemoveAdmin') : t('admin.actionMakeAdmin')}
                             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                               u.is_admin
-                                ? 'bg-[#D97706] text-[#333333] hover:brightness-95'
+                                ? 'border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                             }`}
                           >
@@ -315,7 +315,7 @@ export default function AdminPage() {
         )}
 
         {/* Подсказка */}
-        <div className="mt-6 bg-white border border-gray-200 rounded-2xl p-4 text-sm text-gray-500">
+        <div className="bento-panel-quiet mt-2.5 p-4 text-sm text-gray-500">
           <p className="font-bold text-[#333333] mb-2">{t('admin.howItWorks')}</p>
           <ul className="list-disc list-inside space-y-1">
             <li>{t('admin.hint1')}</li>

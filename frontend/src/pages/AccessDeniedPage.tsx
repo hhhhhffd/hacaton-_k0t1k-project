@@ -10,9 +10,11 @@ import type { ChatMessage } from '../types';
 // Управление сессиями чата (localStorage + sessionStorage)
 // ================================================================
 
-const CURRENT_SESSION_KEY = 'k0t1k_session_id';
-const SESSIONS_INDEX_KEY = 'k0t1k_sessions';
-const chatStorageKey = (id: string) => `k0t1k_chat_${id}`;
+const storageKeyPrefix = (userId: number) => `k0t1k_user_${userId}`;
+const currentSessionKey = (userId: number) => `${storageKeyPrefix(userId)}_session_id`;
+const sessionsIndexKey = (userId: number) => `${storageKeyPrefix(userId)}_sessions`;
+const chatStorageKey = (userId: number, sessionId: string) =>
+  `${storageKeyPrefix(userId)}_chat_${sessionId}`;
 
 interface SessionMeta {
   id: string;
@@ -20,34 +22,38 @@ interface SessionMeta {
   preview: string;
 }
 
-function getOrCreateSessionId(): string {
-  let id = sessionStorage.getItem(CURRENT_SESSION_KEY);
+function getOrCreateSessionId(userId: number): string {
+  const key = currentSessionKey(userId);
+  let id = sessionStorage.getItem(key);
   if (!id) {
     id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    sessionStorage.setItem(CURRENT_SESSION_KEY, id);
+    sessionStorage.setItem(key, id);
   }
   return id;
 }
 
-function createNewSessionId(): string {
+function createNewSessionId(userId: number): string {
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  sessionStorage.setItem(CURRENT_SESSION_KEY, id);
+  sessionStorage.setItem(currentSessionKey(userId), id);
   return id;
 }
 
-function loadChatMessages(sessionId: string): ChatMessage[] {
+function loadChatMessages(userId: number, sessionId: string): ChatMessage[] {
   try {
-    const raw = localStorage.getItem(chatStorageKey(sessionId));
+    const raw = localStorage.getItem(chatStorageKey(userId, sessionId));
     if (raw) return JSON.parse(raw) as ChatMessage[];
-  } catch { /* игнорируем ошибки парсинга */ }
+  } catch (error) {
+    console.error('Не удалось загрузить историю чата', error);
+  }
   return [];
 }
 
-function saveChatMessages(sessionId: string, msgs: ChatMessage[]): void {
+function saveChatMessages(userId: number, sessionId: string, msgs: ChatMessage[]): void {
   if (!sessionId) return;
-  localStorage.setItem(chatStorageKey(sessionId), JSON.stringify(msgs));
   try {
-    const raw = localStorage.getItem(SESSIONS_INDEX_KEY);
+    localStorage.setItem(chatStorageKey(userId, sessionId), JSON.stringify(msgs));
+    const indexKey = sessionsIndexKey(userId);
+    const raw = localStorage.getItem(indexKey);
     const list: SessionMeta[] = raw ? JSON.parse(raw) : [];
     const idx = list.findIndex((s) => s.id === sessionId);
     const firstUserMsg = msgs.find((m) => m.role === 'user');
@@ -57,26 +63,32 @@ function saveChatMessages(sessionId: string, msgs: ChatMessage[]): void {
     } else {
       list.unshift({ id: sessionId, created_at: Date.now(), preview });
     }
-    localStorage.setItem(SESSIONS_INDEX_KEY, JSON.stringify(list.slice(0, 10)));
-  } catch { /* игнорируем */ }
+    localStorage.setItem(indexKey, JSON.stringify(list.slice(0, 10)));
+  } catch (error) {
+    console.error('Не удалось сохранить историю чата', error);
+  }
 }
 
-function loadSessionsList(): SessionMeta[] {
+function loadSessionsList(userId: number): SessionMeta[] {
   try {
-    const raw = localStorage.getItem(SESSIONS_INDEX_KEY);
+    const raw = localStorage.getItem(sessionsIndexKey(userId));
     return raw ? (JSON.parse(raw) as SessionMeta[]) : [];
-  } catch {
+  } catch (error) {
+    console.error('Не удалось загрузить список чатов', error);
     return [];
   }
 }
 
-function removeSession(sessionId: string): void {
-  localStorage.removeItem(chatStorageKey(sessionId));
+function removeSession(userId: number, sessionId: string): void {
   try {
-    const raw = localStorage.getItem(SESSIONS_INDEX_KEY);
+    localStorage.removeItem(chatStorageKey(userId, sessionId));
+    const indexKey = sessionsIndexKey(userId);
+    const raw = localStorage.getItem(indexKey);
     const list: SessionMeta[] = raw ? JSON.parse(raw) : [];
-    localStorage.setItem(SESSIONS_INDEX_KEY, JSON.stringify(list.filter((s) => s.id !== sessionId)));
-  } catch { /* игнорируем */ }
+    localStorage.setItem(indexKey, JSON.stringify(list.filter((s) => s.id !== sessionId)));
+  } catch (error) {
+    console.error('Не удалось удалить чат', error);
+  }
 }
 
 // ================================================================
@@ -117,6 +129,7 @@ export default function AccessDeniedPage() {
   const { t, language } = useTranslation();
   const setLanguage = useAppStore((s) => s.setLanguage);
   const { user, logout } = useAuthStore();
+  const userId = user?.id;
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -129,14 +142,15 @@ export default function AccessDeniedPage() {
 
   // Инициализация: загружаем сессию из sessionStorage/localStorage
   useEffect(() => {
+    if (userId === undefined) return;
     hasMountedRef.current = true;
-    const id = getOrCreateSessionId();
+    const id = getOrCreateSessionId(userId);
     setSessionId(id);
-    const stored = loadChatMessages(id);
+    const stored = loadChatMessages(userId, id);
     setMessages(stored.length > 0 ? stored : [welcomeMsg(language)]);
-    setSessions(loadSessionsList());
+    setSessions(loadSessionsList(userId));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userId]);
 
   // Смена языка: обновляем приветствие только если пользователь ещё не писал
   useEffect(() => {
@@ -149,10 +163,10 @@ export default function AccessDeniedPage() {
 
   // Сохраняем сообщения в localStorage при каждом изменении
   useEffect(() => {
-    if (!sessionId || messages.length === 0) return;
-    saveChatMessages(sessionId, messages);
-    setSessions(loadSessionsList());
-  }, [messages, sessionId]);
+    if (userId === undefined || !sessionId || messages.length === 0) return;
+    saveChatMessages(userId, sessionId, messages);
+    setSessions(loadSessionsList(userId));
+  }, [messages, sessionId, userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -233,31 +247,35 @@ export default function AccessDeniedPage() {
   };
 
   const handleClearChat = () => {
-    removeSession(sessionId);
+    if (userId === undefined) return;
+    removeSession(userId, sessionId);
     setMessages([welcomeMsg(language)]);
-    setSessions(loadSessionsList());
+    setSessions(loadSessionsList(userId));
   };
 
   const handleNewSession = () => {
-    const newId = createNewSessionId();
+    if (userId === undefined) return;
+    const newId = createNewSessionId(userId);
     setSessionId(newId);
     setMessages([welcomeMsg(language)]);
-    setSessions(loadSessionsList());
+    setSessions(loadSessionsList(userId));
     setShowSessions(false);
   };
 
   const handleSwitchSession = (id: string) => {
-    sessionStorage.setItem(CURRENT_SESSION_KEY, id);
+    if (userId === undefined) return;
+    sessionStorage.setItem(currentSessionKey(userId), id);
     setSessionId(id);
-    const stored = loadChatMessages(id);
+    const stored = loadChatMessages(userId, id);
     setMessages(stored.length > 0 ? stored : [welcomeMsg(language)]);
     setShowSessions(false);
   };
 
   const handleDeleteSession = (id: string, e: React.MouseEvent) => {
+    if (userId === undefined) return;
     e.stopPropagation();
-    removeSession(id);
-    const updated = loadSessionsList();
+    removeSession(userId, id);
+    const updated = loadSessionsList(userId);
     setSessions(updated);
     if (id === sessionId) {
       // Удалили текущую — переключаемся на последнюю или создаём новую
@@ -287,7 +305,7 @@ export default function AccessDeniedPage() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col px-4 py-6 relative overflow-hidden">
+    <div className="workspace-shell relative flex h-screen flex-col overflow-hidden px-3 py-4 sm:px-5">
       {/* Переключатель языка */}
       <button
         onClick={() => setLanguage(language === 'ru' ? 'kz' : 'ru')}
@@ -297,20 +315,20 @@ export default function AccessDeniedPage() {
         {language === 'ru' ? 'Қазақша' : 'Русский'}
       </button>
 
-      <div className="w-full max-w-2xl mx-auto flex flex-col flex-1 min-h-0">
+      <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
         {/* Заголовок проекта */}
-        <div className="text-center mb-4 shrink-0">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-8 h-8 bg-[#C0F11C] rounded-lg flex items-center justify-center">
-              <Wheat className="w-4 h-4 text-[#333333]" />
-            </div>
-            <h1 className="text-xl font-bold text-gray-900">_k0t1k Project</h1>
+        <div className="mb-3 flex shrink-0 items-center gap-3 text-left">
+          <div className="brand-mark shrink-0">
+            <Wheat className="w-4 h-4 text-[#333333]" />
           </div>
-          <p className="text-sm text-gray-500 mt-1">{t('auth.subtitle')}</p>
+          <div className="min-w-0">
+            <h1 className="text-lg font-extrabold leading-tight text-gray-900">_k0t1k</h1>
+            <p className="mt-0.5 truncate text-xs leading-tight text-gray-500">{t('auth.subtitle')}</p>
+          </div>
         </div>
 
         {/* Карточка пользователя */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-sm shrink-0">
+        <div className="bento-panel mb-2.5 shrink-0 p-3">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-[#C0F11C] rounded-full flex items-center justify-center">
               <Wheat className="w-5 h-5 text-[#333333]" />
@@ -330,7 +348,7 @@ export default function AccessDeniedPage() {
         </div>
 
         {/* AI-ассистент */}
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col flex-1 min-h-0">
+        <div className="bento-panel flex min-h-0 flex-1 flex-col overflow-hidden">
           {/* Шапка чата */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white">
             <div className="w-8 h-8 bg-[#C0F11C] rounded-lg flex items-center justify-center shrink-0">

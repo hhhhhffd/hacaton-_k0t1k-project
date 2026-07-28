@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useAppStore } from '../store/appStore';
 import ruTranslations from './ru.json';
 import kzTranslations from './kz.json';
@@ -15,7 +16,7 @@ export function useTranslation() {
   const language = useAppStore((s) => s.language);
   const locale = language; // Alias for StatusPage
 
-  function t(key: string, params?: Record<string, string | number>): string {
+  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
     const dict = translations[language] || translations.ru;
 
     // Сначала ищем плоский ключ ("analytics.title" → dict["analytics.title"])
@@ -47,7 +48,7 @@ export function useTranslation() {
     }
 
     return textStr;
-  }
+  }, [language]);
 
   return { t, language, locale };
 }
