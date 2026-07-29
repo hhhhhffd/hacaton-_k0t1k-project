@@ -77,10 +77,10 @@ export default function AnalyticsPage() {
     <>
       <Header title={t('analytics.title')} />
 
-      <div className="flex-1 p-5 space-y-4 overflow-y-auto">
+      <div className="page-frame flex-1 space-y-2.5">
         {/* Сервер недоступен или данных нет */}
         {!statsLoading && !stats && statsError && (
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <div className="bento-panel overflow-hidden">
             <EmptyState kind={statsError === 'unavailable' ? 'unavailable' : 'no_data'} />
           </div>
         )}
@@ -103,9 +103,9 @@ export default function AnalyticsPage() {
             <WeightSimulator />
 
             {/* 3. Графики: распределение, риски, регионы */}
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 gap-2.5 xl:grid-cols-12">
               {/* Распределение баллов — горизонтальный бар */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-5">
+              <div className="bento-panel p-5 xl:col-span-5">
                 <h3 className="text-sm font-extrabold text-[#333333] tracking-tight mb-1">{t('analytics.scoreDistribution')}</h3>
                 <p className="text-xs text-gray-400 mb-4">{t('analytics.scoreDistSubtitle')}</p>
                 {scoreDistData.length > 0 ? (
@@ -163,7 +163,7 @@ export default function AnalyticsPage() {
               </div>
 
               {/* Уровни риска — пирог */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-5">
+              <div className="bento-panel p-5 xl:col-span-3">
                 <h3 className="text-sm font-extrabold text-[#333333] tracking-tight mb-4">{t('dashboard.anomalies')}</h3>
                 {riskData.length > 0 ? (
                   <div className="flex items-center gap-4">
@@ -216,7 +216,7 @@ export default function AnalyticsPage() {
               </div>
 
               {/* Топ регионов */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-5">
+              <div className="bento-panel p-5 xl:col-span-4">
                 <h3 className="text-sm font-extrabold text-[#333333] tracking-tight mb-4">{t('analytics.regionStats')}</h3>
                 {regionData.length > 0 ? (
                   <ExpandableChart title={t('analytics.regionStats')} minHeight="min-h-[280px]">

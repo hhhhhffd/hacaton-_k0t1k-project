@@ -24,7 +24,7 @@ function getStageKey(progress: number): string {
   return TRAINING_STAGES[100];
 }
 
-/** Шапка страницы: заголовок + кнопка загрузки */
+/** Контекстная строка рабочего раздела: заголовок и импорт набора данных. */
 export default function Header({ title }: HeaderProps) {
   const { t } = useTranslation();
 
@@ -104,14 +104,14 @@ export default function Header({ title }: HeaderProps) {
   const isProcessing = uploadState === 'uploading' || uploadState === 'training';
 
   return (
-    <header className="bg-white border-b border-gray-200 px-8 py-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">{title}</h2>
+    <header className="page-frame pb-0">
+      <div className="bento-panel flex min-h-[76px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
+        <h1 className="text-xl font-extrabold tracking-[-0.025em] text-[#333333] sm:text-2xl">{title}</h1>
 
         <div className="flex items-center gap-3">
           {/* Прогресс-бар */}
           {uploadState === 'training' && (
-            <div className="w-48 h-2 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+            <div className="h-2 w-32 overflow-hidden rounded-full border border-gray-200 bg-gray-100 sm:w-48">
               <div
                 className="h-full bg-[#C0F11C] transition-all duration-700 ease-out"
                 style={{ width: `${progress}%` }}
@@ -121,12 +121,12 @@ export default function Header({ title }: HeaderProps) {
 
           {/* Сообщение */}
           {uploadMessage && (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium ${
+            <div role="status" className={`flex items-center gap-2 rounded-[9px] px-3 py-2 text-xs font-medium ${
               isProcessing
                 ? 'bg-gray-100 text-gray-600'
                 : uploadState === 'success'
                   ? 'bg-[#C0F11C] text-[#333333]'
-                  : 'bg-[#DC2626] text-[#333333]'
+                  : 'bg-[#DC2626] text-white'
             }`}>
               {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
               {uploadState === 'success' && <Check className="w-4 h-4" />}
@@ -145,10 +145,10 @@ export default function Header({ title }: HeaderProps) {
               onChange={handleUpload}
               disabled={isProcessing}
             />
-            <span className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            <span className={`flex min-h-10 items-center gap-2 rounded-[9px] border px-4 py-2 text-sm font-bold transition-all ${
               isProcessing
                 ? 'bg-gray-100 text-gray-400 cursor-wait border border-gray-200'
-                : 'bg-[#C0F11C] text-[#333333] cursor-pointer hover:brightness-95'
+                : 'border-[#a8d400] bg-[#C0F11C] text-[#333333] cursor-pointer hover:brightness-95'
             }`}>
               {!isProcessing && <Upload className="w-4 h-4" />}
               {t('header.upload')}

@@ -1,7 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { Check, Clock, Info, Search, TrendingUp } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import PublicHeader from '../components/PublicHeader';
 import { useTranslation } from '../i18n/useTranslation';
-import { Search, Info, TrendingUp, Lightbulb, CheckCircle, Clock } from 'lucide-react';
 
 interface StatusData {
   application_number: string;
@@ -15,152 +17,151 @@ interface StatusData {
 
 export default function StatusPage() {
   const { id } = useParams();
-  const { t, locale } = useTranslation();
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { t, locale, language } = useTranslation();
+  const [searchValue, setSearchValue] = useState(id ?? '');
+  const [loading, setLoading] = useState(Boolean(id));
   const [data, setData] = useState<StatusData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStatus = useCallback(async (appId: string) => {
+  const fetchStatus = useCallback(async (applicationId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/public/applications/${appId}/status?lang=${locale}`);
-      if (!response.ok) throw new Error('Заявка не найдена');
-      const json = await response.json();
-      setData(json);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Неизвестная ошибка');
-      }
+      const response = await fetch(`/api/public/applications/${encodeURIComponent(applicationId)}/status?lang=${locale}`);
+      if (!response.ok) throw new Error('NOT_FOUND');
+      setData(await response.json() as StatusData);
+    } catch {
+      setData(null);
+      setError('NOT_FOUND');
     } finally {
       setLoading(false);
     }
   }, [locale]);
 
   useEffect(() => {
+    setSearchValue(id ?? '');
     if (id) {
       fetchStatus(id);
+      return;
     }
+    setLoading(false);
+    setData(null);
+    setError(null);
   }, [id, fetchStatus]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#C0F11C]/30 border-t-[#C0F11C] rounded-full animate-spin" />
-      </div>
-    );
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const normalizedValue = searchValue.trim();
+    if (normalizedValue) navigate(`/status/${encodeURIComponent(normalizedValue)}`);
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Search Header */}
-        <div className="mb-12">
-          <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">{t('status.title')}</h1>
-          <div className="relative max-w-md mx-auto">
-            <input
-              type="text"
-              placeholder={t('status.search_placeholder')}
-              className="w-full bg-white border border-gray-200 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] transition-all text-gray-900 placeholder-gray-400"
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === 'Enter') {
-                  window.location.href = `/status/${e.currentTarget.value}`;
-                }
-              }}
-              defaultValue={id}
-            />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-          </div>
-        </div>
+    <div className="public-shell">
+      <PublicHeader />
+      <main className="page-frame py-3 sm:py-5">
+        <div className="bento-grid">
+          <section className="bento-panel col-span-5 flex min-h-[250px] flex-col justify-between border-t-4 border-t-[#C0F11C] p-6 sm:p-8">
+            <div>
+              <h1 className="text-3xl font-extrabold leading-tight tracking-[-.035em]">{t('status.title')}</h1>
+              <p className="mt-4 max-w-sm text-sm text-gray-600">
+                {language === 'kz' ? 'Тіркеу кезінде берілген өтінім нөмірін енгізіңіз.' : 'Введите номер, полученный при регистрации заявки.'}
+              </p>
+            </div>
+          </section>
 
-        {error ? (
-          <div className="bg-white border border-red-400 p-8 rounded-3xl text-center">
-            <Info className="w-12 h-12 text-[#333333] mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-[#333333] mb-2">Заявка не найдена</h2>
-            <p className="text-gray-500">Проверьте номер заявки и попробуйте снова.</p>
-          </div>
-        ) : data && (
-          <div className="space-y-6">
-            {/* Status Card */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 bg-white border border-gray-200 p-8 rounded-3xl relative overflow-hidden shadow-sm">
-                <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      data.status === 'Исполнена' ? 'bg-[#C0F11C] text-[#333333]' : 'bg-[#D97706] text-[#333333]'
-                    }`}>
-                      {data.status}
-                    </span>
-                    <span className="text-gray-400 text-sm">#{data.application_number}</span>
-                  </div>
-                  <h2 className="text-4xl font-bold mb-2 text-gray-900">
-                    {data.merit_score?.toFixed(1) || '0.0'} <span className="text-lg text-gray-400 font-normal">/ 100 баллов</span>
-                  </h2>
-                  <p className="text-gray-500 leading-relaxed text-lg italic">
-                    «{data.explanation}»
+          <section className="bento-panel col-span-7 flex min-h-[250px] items-center p-6 sm:p-8">
+            <form onSubmit={handleSearch} className="w-full">
+              <label htmlFor="application-number" className="section-kicker">{t('status.search_placeholder')}</label>
+              <div className="mt-3 flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <input
+                    id="application-number"
+                    value={searchValue}
+                    onChange={(event) => setSearchValue(event.target.value)}
+                    className="work-control pl-10 font-mono"
+                    placeholder="KZ-2026-000000"
+                    autoComplete="off"
+                  />
+                </div>
+                <button className="work-button" type="submit">{language === 'kz' ? 'Тексеру' : 'Проверить'}</button>
+              </div>
+            </form>
+          </section>
+
+          {loading && (
+            <section className="bento-panel col-span-12 grid min-h-[300px] place-items-center" aria-live="polite">
+              <div className="text-center">
+                <span className="mx-auto block h-7 w-7 animate-spin rounded-full border-2 border-[#C0F11C] border-t-[#333333]" />
+                <p className="mt-3 text-xs text-gray-500">{language === 'kz' ? 'Өтінім ізделуде…' : 'Поиск заявки…'}</p>
+              </div>
+            </section>
+          )}
+
+          {!loading && error && (
+            <section className="bento-panel col-span-12 flex min-h-[260px] flex-col justify-between border-[#DC2626] p-7">
+              <Info className="h-7 w-7 text-[#DC2626]" />
+              <div>
+                <h2 className="text-2xl font-extrabold">{language === 'kz' ? 'Өтінім табылмады' : 'Заявка не найдена'}</h2>
+                <p className="mt-2 text-sm text-gray-600">{language === 'kz' ? 'Нөмірді тексеріп, қайталап көріңіз.' : 'Проверьте номер заявки и попробуйте снова.'}</p>
+              </div>
+            </section>
+          )}
+
+          {!loading && data && (
+            <>
+              <section className="bento-panel col-span-7 flex min-h-[280px] flex-col justify-between p-6 sm:p-8">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="rounded-full border border-[#a8d400] bg-[#C0F11C] px-3 py-1 font-mono text-[10px] font-bold uppercase">{data.status}</span>
+                  <span className="font-mono text-xs text-gray-500">#{data.application_number}</span>
+                </div>
+                <div>
+                  <p className="data-value text-6xl font-extrabold tracking-[-.06em]">
+                    {data.merit_score?.toFixed(1) ?? '0.0'}<span className="ml-2 text-base font-normal text-gray-400">/ 100</span>
                   </p>
+                  <p className="mt-4 max-w-2xl text-sm leading-relaxed text-gray-600">{data.explanation}</p>
                 </div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#C0F11C]/10 blur-3xl rounded-full -mr-20 -mt-20" />
-              </div>
+              </section>
 
-              <div className="bg-white border border-gray-200 p-8 rounded-3xl flex flex-col justify-center items-center text-center shadow-sm">
-                <TrendingUp className="w-10 h-10 text-[#333333] mb-4" />
-                <p className="text-gray-400 text-sm mb-1">{t('status.rank')}</p>
-                <p className="text-5xl font-bold text-gray-900 mb-2">{data.rank}</p>
-                <p className="text-gray-400 text-sm">из {data.total_applications} заявок</p>
-              </div>
-            </div>
+              <section className="bento-panel-accent col-span-5 flex min-h-[280px] flex-col justify-between p-6 sm:p-8">
+                <TrendingUp className="h-6 w-6" />
+                <div>
+                  <p className="data-label !text-[#333333]/60">{t('status.rank')}</p>
+                  <p className="data-value mt-2 text-6xl font-extrabold">{data.rank}</p>
+                  <p className="mt-2 text-sm text-[#333333]/65">/ {data.total_applications}</p>
+                </div>
+              </section>
 
-            {/* Recommendations */}
-            <div className="bg-[#C0F11C]/10 border border-[#C0F11C]/30 p-8 rounded-3xl">
-              <div className="flex items-center gap-3 mb-6">
-                <Lightbulb className="w-6 h-6 text-[#333333]" />
-                <h3 className="text-xl font-bold text-gray-900">{t('status.recommendations')}</h3>
-              </div>
-              <ul className="space-y-4">
-                {data.recommendations.map((rec: string, i: number) => (
-                  <li key={i} className="flex gap-4 items-start">
-                    <div className="w-6 h-6 bg-[#C0F11C] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-2 h-2 bg-[#080000] rounded-full" />
-                    </div>
-                    <p className="text-gray-600 text-lg">{rec}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <section className="bento-panel col-span-8 p-6 sm:p-8">
+                <p className="section-kicker">{t('status.recommendations')}</p>
+                <ol className="mt-5 divide-y divide-gray-200">
+                  {data.recommendations.map((recommendation, index) => (
+                    <li key={recommendation} className="flex gap-4 py-4 first:pt-0 last:pb-0">
+                      <span className="data-value text-xs text-gray-400">0{index + 1}</span>
+                      <p className="text-sm leading-relaxed text-gray-700">{recommendation}</p>
+                    </li>
+                  ))}
+                </ol>
+              </section>
 
-            {/* Timeline Simulation */}
-            <div className="bg-white border border-gray-200 p-8 rounded-3xl shadow-sm">
-              <h3 className="text-xl font-bold mb-8 text-gray-900">{t('status.process')}</h3>
-              <div className="relative">
-                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
-                <div className="space-y-10 relative">
-                  <div className="flex items-center gap-8 pl-1">
-                    <div className="w-6 h-6 bg-[#C0F11C] rounded-full ring-4 ring-[#C0F11C]/20 relative z-10 flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-[#333333]" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900">{t('status.step1_title')}</h4>
-                      <p className="text-gray-400 text-sm">{t('status.step1_desc')}</p>
-                    </div>
+              <section className="bento-panel-quiet col-span-4 p-6 sm:p-8">
+                <p className="section-kicker">{t('status.process')}</p>
+                <div className="mt-6 space-y-6">
+                  <div className="flex gap-3">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#C0F11C]"><Check className="h-4 w-4" /></span>
+                    <div><p className="text-sm font-bold">{t('status.step1_title')}</p><p className="mt-1 text-xs text-gray-500">{t('status.step1_desc')}</p></div>
                   </div>
-                  <div className="flex items-center gap-8 pl-1 opacity-50">
-                    <div className="w-6 h-6 bg-gray-200 rounded-full relative z-10 flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-700">{t('status.step2_title')}</h4>
-                      <p className="text-gray-400 text-sm">{t('status.step2_desc')}</p>
-                    </div>
+                  <div className="flex gap-3 opacity-55">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-gray-200"><Clock className="h-4 w-4" /></span>
+                    <div><p className="text-sm font-bold">{t('status.step2_title')}</p><p className="mt-1 text-xs text-gray-500">{t('status.step2_desc')}</p></div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+              </section>
+            </>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

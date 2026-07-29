@@ -22,9 +22,9 @@ export default function App() {
   if (loading) {
     const lang = (localStorage.getItem('ui_language') as 'ru' | 'kz') || 'kz';
     return (
-      <div className="min-h-screen bg-[#F4F4F4] flex items-center justify-center">
+      <div className="workspace-shell flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-[#C0F11C] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#C0F11C] border-t-[#333333]" />
           <p className="text-gray-500 text-sm">
             {lang === 'kz' ? 'Авторизация тексерілуде...' : 'Проверка авторизации...'}
           </p>

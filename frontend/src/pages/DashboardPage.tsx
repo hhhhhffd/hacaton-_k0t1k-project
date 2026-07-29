@@ -38,9 +38,9 @@ export default function DashboardPage() {
     <>
       <Header title={t('dashboard.title')} />
 
-      <div className="flex-1 p-5 space-y-4 overflow-y-auto">
+      <div className="page-frame flex-1 space-y-2.5">
         {showEmptyState ? (
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <div className="bento-panel overflow-hidden">
             <EmptyState kind={isUnavailable ? 'unavailable' : 'no_data'} />
           </div>
         ) : (
@@ -55,7 +55,7 @@ export default function DashboardPage() {
             <FilterBar />
 
             {/* ===== Таблица заявок (полная ширина) ===== */}
-            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="bento-panel overflow-hidden">
               <ApplicationTable onExplain={(id) => setSelectedApplication(id)} />
             </div>
           </>

@@ -199,10 +199,10 @@ export default function FifoVsMerit() {
     : [];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+    <div className="bento-panel overflow-hidden">
       {/* Хедер с заголовком и бюджетом */}
       <div className="px-6 pt-6 pb-4 border-b border-gray-200">
-        <div className="flex items-start justify-between">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-gray-100 rounded-2xl border border-gray-200">
               <Scale className="w-6 h-6 text-[#333333]" />
@@ -221,7 +221,7 @@ export default function FifoVsMerit() {
           </div>
 
           {/* Бюджетные пресеты */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {BUDGET_PRESETS.map((p) => (
               <button
                 key={p.value}

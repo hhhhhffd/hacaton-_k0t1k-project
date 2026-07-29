@@ -1,86 +1,79 @@
-import React from 'react';
+import { ArrowRight, Award, ClipboardCheck, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import PublicHeader from '../components/PublicHeader';
 import { useTranslation } from '../i18n/useTranslation';
-import { FileText, ClipboardCheck, Award, HelpCircle } from 'lucide-react';
 
 export default function GuidePage() {
   const { t } = useTranslation();
-
   const steps = [
-    {
-      icon: <FileText className="w-8 h-8 text-[#333333]" />,
-      title: t('guide.step1_title'),
-      desc: t('guide.step1_desc'),
-    },
-    {
-      icon: <ClipboardCheck className="w-8 h-8 text-[#333333]" />,
-      title: t('guide.step2_title'),
-      desc: t('guide.step2_desc'),
-    },
-    {
-      icon: <Award className="w-8 h-8 text-[#333333]" />,
-      title: t('guide.step3_title'),
-      desc: t('guide.step3_desc'),
-    },
+    { icon: FileText, title: t('guide.step1_title'), desc: t('guide.step1_desc') },
+    { icon: ClipboardCheck, title: t('guide.step2_title'), desc: t('guide.step2_desc') },
+    { icon: Award, title: t('guide.step3_title'), desc: t('guide.step3_desc') },
   ];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-6 md:p-12">
-      <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-            {t('guide.title')}
-          </h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-            {t('guide.subtitle')}
-          </p>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          {steps.map((step, i) => (
-            <div key={i} className="bg-white border border-gray-200 p-8 rounded-3xl relative overflow-hidden group hover:border-[#C0F11C] hover:shadow-lg transition-all">
-              <div className="bg-[#C0F11C] w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                {step.icon}
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">{step.title}</h3>
-              <p className="text-gray-500 leading-relaxed">{step.desc}</p>
-              <div className="absolute top-4 right-4 text-6xl font-black text-gray-100 select-none">
-                {i + 1}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <section className="bg-white border border-gray-200 rounded-3xl p-8 md:p-12">
-          <div className="flex items-center gap-4 mb-8">
-            <HelpCircle className="w-8 h-8 text-[#333333]" />
-            <h2 className="text-2xl font-bold text-gray-900">{t('guide.faq_title')}</h2>
-          </div>
-
-          <div className="space-y-8">
+    <div className="public-shell">
+      <PublicHeader />
+      <main className="page-frame py-3 sm:py-5">
+        <div className="bento-grid">
+          <section className="bento-panel col-span-7 flex min-h-[310px] flex-col justify-between border-t-4 border-t-[#C0F11C] p-6 sm:p-8">
             <div>
-              <h4 className="font-bold text-lg mb-2 text-gray-900">{t('guide.q1_title')}</h4>
-              <p className="text-gray-500 leading-relaxed">{t('guide.q1_desc')}</p>
+              <h1 className="max-w-2xl text-3xl font-extrabold leading-tight tracking-[-.035em] sm:text-4xl">
+                {t('guide.title')}
+              </h1>
+              <p className="mt-5 max-w-xl text-sm leading-relaxed text-gray-600 sm:text-base">{t('guide.subtitle')}</p>
             </div>
-            <div>
-              <h4 className="font-bold text-lg mb-2 text-gray-900">{t('guide.q2_title')}</h4>
-              <p className="text-gray-500 leading-relaxed">{t('guide.q2_desc')}</p>
-            </div>
-          </div>
+          </section>
 
-          <div className="mt-12 p-6 bg-[#C0F11C]/20 rounded-2xl border border-[#C0F11C]/30 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h4 className="font-bold text-lg text-gray-900">{t('guide.ready_title')}</h4>
-              <p className="text-gray-500">{t('guide.ready_desc')}</p>
-            </div>
-            <button
-              onClick={() => window.location.href = '/apply'}
-              className="px-8 py-4 bg-[#C0F11C] hover:brightness-95 text-[#333333] rounded-xl font-bold transition-all"
-            >
+          <aside className="bento-panel col-span-5 flex min-h-[310px] flex-col justify-between p-6 sm:p-8">
+            <p className="text-sm font-bold text-gray-500">{t('guide.q1_title')}</p>
+            <p className="max-w-md text-xl font-bold leading-snug tracking-[-.025em] text-[#333333]">
+              {t('guide.q1_desc')}
+            </p>
+            <Link to="/apply" className="work-button self-start">
               {t('guide.apply_now')}
-            </button>
-          </div>
-        </section>
-      </div>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </aside>
+
+          {steps.map(({ icon: Icon, title, desc }) => (
+            <article
+              key={title}
+              className="bento-panel col-span-4 flex min-h-[250px] flex-col p-6"
+            >
+              <div>
+                <Icon className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div className="mt-auto">
+                <h2 className="text-xl font-extrabold tracking-[-.025em]">{title}</h2>
+                <p className="mt-3 text-sm leading-relaxed text-gray-600">{desc}</p>
+              </div>
+            </article>
+          ))}
+
+          <section className="bento-panel col-span-8 p-6 sm:p-8">
+            <p className="section-kicker">{t('guide.faq_title')}</p>
+            <div className="mt-6 grid gap-8 md:grid-cols-2">
+              <div>
+                <h2 className="font-extrabold text-[#333333]">{t('guide.q1_title')}</h2>
+                <p className="mt-2 text-sm leading-relaxed text-gray-600">{t('guide.q1_desc')}</p>
+              </div>
+              <div>
+                <h2 className="font-extrabold text-[#333333]">{t('guide.q2_title')}</h2>
+                <p className="mt-2 text-sm leading-relaxed text-gray-600">{t('guide.q2_desc')}</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="bento-panel-quiet col-span-4 flex flex-col justify-between p-6 sm:p-8">
+            <div>
+              <h2 className="text-2xl font-extrabold tracking-[-.035em]">{t('guide.ready_title')}</h2>
+              <p className="mt-2 text-sm text-gray-600">{t('guide.ready_desc')}</p>
+            </div>
+            <Link to="/apply" className="work-button mt-8 self-start">{t('guide.apply_now')}</Link>
+          </section>
+        </div>
+      </main>
     </div>
   );
 }

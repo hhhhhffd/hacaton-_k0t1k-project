@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import { AlertCircle, ArrowRight, CheckCircle, Send } from 'lucide-react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import PublicHeader from '../components/PublicHeader';
 import { useTranslation } from '../i18n/useTranslation';
-import { CheckCircle, AlertCircle, Send, ArrowRight } from 'lucide-react';
 
 interface SubmitResult {
   application_number: string;
 }
 
+const REGIONS = ['Алматинская область', 'Акмолинская область', 'Туркестанская область'];
+const DIRECTIONS = ['Мясное скотоводство', 'Молочное скотоводство', 'Овцеводство'];
+
 export default function ApplyPage() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     farmer_name: '',
     region: '',
@@ -19,8 +26,8 @@ export default function ApplyPage() {
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setLoading(true);
     setError(null);
 
@@ -30,162 +37,122 @@ export default function ApplyPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          land_area: parseFloat(formData.land_area),
-          amount: parseFloat(formData.amount),
+          land_area: Number(formData.land_area),
+          amount: Number(formData.amount),
         }),
       });
-
-      if (!response.ok) throw new Error('Failed to submit');
-      const data = response.ok ? await response.json() : null;
-      setResult(data);
+      if (!response.ok) throw new Error('Failed to submit application');
+      setResult(await response.json() as SubmitResult);
     } catch {
-      setError('Ошибка при отправке заявки. Попробуйте снова.');
+      setError(language === 'kz' ? 'Өтінімді жіберу кезінде қате шықты. Қайталап көріңіз.' : 'Ошибка при отправке заявки. Попробуйте снова.');
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   if (result) {
     return (
-      <div className="min-h-screen bg-white text-gray-900 p-6 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white border border-[#C0F11C]/30 rounded-2xl p-8 text-center shadow-sm">
-          <div className="w-16 h-16 bg-[#C0F11C] rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-8 h-8 text-[#333333]" />
+      <div className="public-shell">
+        <PublicHeader />
+        <main className="page-frame">
+          <div className="bento-grid min-h-[calc(100vh-100px)] content-center">
+            <section className="bento-panel col-span-7 flex min-h-[380px] flex-col justify-between border-t-4 border-t-[#C0F11C] p-7 sm:p-10">
+              <CheckCircle className="h-8 w-8" />
+              <div>
+                <h1 className="text-3xl font-extrabold tracking-[-.035em]">{t('apply.success_title')}</h1>
+                <p className="mt-3 max-w-lg text-gray-600">{t('apply.success_desc')}</p>
+              </div>
+            </section>
+            <section className="bento-panel col-span-5 flex min-h-[380px] flex-col justify-between p-7 sm:p-10">
+              <div>
+                <p className="data-label">{t('apply.your_number')}</p>
+                <p className="data-value mt-3 break-all text-3xl font-extrabold tracking-wider">{result.application_number}</p>
+              </div>
+              <button onClick={() => navigate(`/status/${result.application_number}`)} className="work-button self-start">
+                {t('apply.check_status')} <ArrowRight className="h-4 w-4" />
+              </button>
+            </section>
           </div>
-          <h1 className="text-2xl font-bold mb-2 text-gray-900">{t('apply.success_title')}</h1>
-          <p className="text-gray-500 mb-6">{t('apply.success_desc')}</p>
-          
-          <div className="bg-gray-50 rounded-xl p-4 mb-8 border border-gray-200">
-            <p className="text-sm text-gray-400 mb-1">{t('apply.your_number')}</p>
-            <p className="text-3xl font-mono font-bold tracking-wider text-[#333333]">
-              {result.application_number}
-            </p>
-          </div>
-
-          <button
-            onClick={() => window.location.href = `/status/${result.application_number}`}
-            className="w-full py-4 bg-[#C0F11C] hover:brightness-95 text-[#333333] rounded-xl font-semibold transition-all flex items-center justify-center gap-2 group"
-          >
-            {t('apply.check_status')}
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
+        </main>
       </div>
     );
   }
 
+  const inputClass = 'work-control';
+  const labelClass = 'mb-2 block text-xs font-bold text-gray-600';
+
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-6">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold mb-4 text-gray-900">
-            {t('apply.title')}
-          </h1>
-          <p className="text-gray-500 text-lg">
-            {t('apply.subtitle')}
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white border border-gray-200 p-8 rounded-3xl shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-500 mb-2">{t('apply.farmer_name')}</label>
-              <input
-                required
-                type="text"
-                value={formData.farmer_name}
-                onChange={e => setFormData({ ...formData, farmer_name: e.target.value })}
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] outline-none transition-all text-gray-900 placeholder-gray-400"
-                placeholder="ИП 'Агро-Мир' или Иванов И.И."
-              />
-            </div>
-
+    <div className="public-shell">
+      <PublicHeader />
+      <main className="page-frame py-3 sm:py-5">
+        <div className="bento-grid">
+          <aside className="bento-panel col-span-4 flex min-h-[310px] flex-col justify-between border-t-4 border-t-[#C0F11C] p-6 sm:sticky sm:top-[78px] sm:self-start sm:p-8">
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">{t('apply.region')}</label>
-              <select
-                required
-                value={formData.region}
-                onChange={e => setFormData({ ...formData, region: e.target.value })}
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] outline-none transition-all appearance-none text-gray-900"
-              >
-                <option value="">Выберите регион</option>
-                <option value="Алматинская область">Алматинская область</option>
-                <option value="Акмолинская область">Акмолинская область</option>
-                <option value="Туркестанская область">Туркестанская область</option>
-                {/* Add more */}
-              </select>
+              <h1 className="text-3xl font-extrabold leading-tight tracking-[-.035em]">{t('apply.title')}</h1>
+              <p className="mt-4 text-sm leading-relaxed text-gray-600">{t('apply.subtitle')}</p>
+            </div>
+            <p className="text-xs text-gray-500">
+              {language === 'kz' ? 'Дербес деректер қорғалған' : 'Персональные данные защищены'}
+            </p>
+          </aside>
+
+          <form onSubmit={handleSubmit} className="bento-panel col-span-8 p-5 sm:p-8">
+            <div className="mb-7 flex items-center justify-between border-b border-gray-200 pb-4">
+              <div>
+                <p className="text-sm font-bold text-[#333333]">
+                  {language === 'kz' ? 'Өтінім деректері' : 'Сведения о заявке'}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">* {language === 'kz' ? 'міндетті өрістер' : 'обязательные поля'}</p>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">{t('apply.direction')}</label>
-              <select
-                required
-                value={formData.direction}
-                onChange={e => setFormData({ ...formData, direction: e.target.value })}
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] outline-none transition-all appearance-none text-gray-900"
-              >
-                <option value="">Выберите направление</option>
-                <option value="Мясное скотоводство">Мясное скотоводство</option>
-                <option value="Молочное скотоводство">Молочное скотоводство</option>
-                <option value="Овцеводство">Овцеводство</option>
-              </select>
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="md:col-span-2">
+                <span className={labelClass}>{t('apply.farmer_name')} *</span>
+                <input required value={formData.farmer_name} onChange={(event) => setFormData({ ...formData, farmer_name: event.target.value })} className={inputClass} />
+              </label>
+              <label>
+                <span className={labelClass}>{t('apply.region')} *</span>
+                <select required value={formData.region} onChange={(event) => setFormData({ ...formData, region: event.target.value })} className={inputClass}>
+                  <option value="">{language === 'kz' ? 'Өңірді таңдаңыз' : 'Выберите регион'}</option>
+                  {REGIONS.map((region) => <option key={region}>{region}</option>)}
+                </select>
+              </label>
+              <label>
+                <span className={labelClass}>{t('apply.direction')} *</span>
+                <select required value={formData.direction} onChange={(event) => setFormData({ ...formData, direction: event.target.value })} className={inputClass}>
+                  <option value="">{language === 'kz' ? 'Бағытты таңдаңыз' : 'Выберите направление'}</option>
+                  {DIRECTIONS.map((direction) => <option key={direction}>{direction}</option>)}
+                </select>
+              </label>
+              <label>
+                <span className={labelClass}>{t('apply.land_area')} *</span>
+                <input required min="0" type="number" step="0.1" value={formData.land_area} onChange={(event) => setFormData({ ...formData, land_area: event.target.value })} className={inputClass} placeholder="0.0" />
+              </label>
+              <label>
+                <span className={labelClass}>{t('apply.amount')} *</span>
+                <input required min="0" type="number" value={formData.amount} onChange={(event) => setFormData({ ...formData, amount: event.target.value })} className={inputClass} placeholder="0 ₸" />
+              </label>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">{t('apply.land_area')}</label>
-              <input
-                required
-                type="number"
-                step="0.1"
-                value={formData.land_area}
-                onChange={e => setFormData({ ...formData, land_area: e.target.value })}
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] outline-none transition-all text-gray-900 placeholder-gray-400"
-                placeholder="0.0 га"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-2">{t('apply.amount')}</label>
-              <input
-                required
-                type="number"
-                value={formData.amount}
-                onChange={e => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:border-[#C0F11C] focus:ring-1 focus:ring-[#C0F11C] outline-none transition-all text-gray-900 placeholder-gray-400"
-                placeholder="0 ₸"
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="p-4 bg-[#DC2626] rounded-xl flex items-center gap-3 text-[#333333]">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
-
-          <button
-            disabled={loading}
-            type="submit"
-            className="w-full py-4 bg-[#C0F11C] hover:brightness-95 disabled:opacity-50 text-[#333333] rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <div className="w-5 h-5 border-2 border-[#080000]/30 border-t-[#080000] rounded-full animate-spin" />
-            ) : (
-              <>
-                <Send className="w-5 h-5" />
-                {t('apply.submit')}
-              </>
+            {error && (
+              <div role="alert" className="mt-5 flex items-center gap-3 rounded-[9px] bg-[#DC2626] p-4 text-sm text-white">
+                <AlertCircle className="h-5 w-5 shrink-0" /> {error}
+              </div>
             )}
-          </button>
-        </form>
 
-        <p className="mt-8 text-center text-gray-400 text-sm">
-          Нажимая кнопку, вы соглашаетесь на обработку персональных данных.
-          <br />
-          <a href="/guide" className="text-[#333333] font-medium hover:underline mt-2 inline-block">Как это работает?</a>
-        </p>
-      </div>
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-5">
+              <Link to="/guide" className="text-xs font-bold text-gray-500 hover:text-[#333333]">
+                {language === 'kz' ? 'Қызмет қалай жұмыс істейді?' : 'Как работает сервис?'}
+              </Link>
+              <button disabled={loading} type="submit" className="work-button min-w-44 disabled:opacity-50">
+                {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#333333]/25 border-t-[#333333]" /> : <Send className="h-4 w-4" />}
+                {t('apply.submit')}
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { BarChart3, TrendingUp, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useTranslation } from '../i18n/useTranslation';
 import type { StatsResponse } from '../types';
 
@@ -17,47 +16,40 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 
   const cards = [
     {
-      icon: BarChart3,
       title: t('analytics.totalApps'),
       value: stats.total_applications.toLocaleString('ru-RU'),
       subtitle: `${stats.scored_applications.toLocaleString('ru-RU')} ${t('stats.scored').toLowerCase()}`,
-      iconCls: 'bg-[#C0F11C] text-[#333333]',
+      panelCls: 'col-span-4 bg-[#C0F11C] border-[#a8d400]',
     },
     {
-      icon: TrendingUp,
       title: t('analytics.avgScore'),
       value: stats.avg_score !== null ? stats.avg_score.toFixed(1) : '—',
       subtitle: t('stats.outOf100'),
-      iconCls: 'bg-[#C0F11C] text-[#333333]',
+      panelCls: 'col-span-3',
     },
     {
-      icon: ShieldCheck,
       title: t('analytics.lowRisk'),
       value: greenCount.toLocaleString('ru-RU'),
       subtitle: `${((greenCount / total) * 100).toFixed(0)}% ${t('stats.ofTotal')}`,
-      iconCls: 'bg-[#C0F11C] text-[#333333]',
+      panelCls: 'col-span-2',
     },
     {
-      icon: AlertTriangle,
       title: t('analytics.anomalies'),
       value: anomalyCount.toLocaleString('ru-RU'),
       subtitle: `${((anomalyCount / total) * 100).toFixed(1)}% ${t('stats.ofTotal')}`,
-      iconCls: 'bg-[#C0F11C] text-[#333333]',
+      panelCls: 'col-span-3',
     },
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="bento-grid">
       {cards.map((card) => (
-        <div key={card.title} className="bg-white border border-gray-200 rounded-2xl p-5">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-500 mb-1">{card.title}</p>
-              <p className="text-2xl font-extrabold text-gray-900 tabular-nums">{card.value}</p>
-              {card.subtitle && <p className="text-sm text-gray-400 mt-1">{card.subtitle}</p>}
-            </div>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ml-3 ${card.iconCls}`}>
-              <card.icon className="w-5 h-5" />
+        <div key={card.title} className={`bento-panel min-h-32 p-4 sm:p-5 ${card.panelCls}`}>
+          <div className="flex h-full flex-col justify-between">
+            <p className="data-label">{card.title}</p>
+            <div>
+              <p className="data-value mt-3 text-3xl font-extrabold sm:text-4xl">{card.value}</p>
+              {card.subtitle && <p className="mt-1 text-xs text-gray-500">{card.subtitle}</p>}
             </div>
           </div>
         </div>

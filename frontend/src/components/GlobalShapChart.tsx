@@ -46,7 +46,7 @@ export default function GlobalShapChart() {
     : [];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6">
+    <div className="bento-panel p-5 sm:p-6">
       <div className="flex items-center gap-3 mb-5">
         <div className="p-2 bg-[#C0F11C] rounded-xl">
           <Brain className="w-5 h-5 text-[#333333]" />
